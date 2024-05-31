@@ -1,0 +1,173 @@
+#!/bin/bash
+
+clear
+
+display_processes()
+{
+    clear
+    echo "Running Processes:"
+    ps aux
+}
+
+search_files()
+{
+    clear
+    read -p "Enter directory path to search for files: " search_path
+    read -p "Enter file name to search for: " search_file_name
+
+    echo "Searching for '$search_file_name' in '$search_path'..."
+
+    if find "$search_path" -type f -name "$search_file_name" >/dev/null 2>&1;
+then
+echo "Files found in '$search_path' matching '$search_file_name':"
+find "$search_path" -type f -name "$search_file_name"
+else
+    echo "No files matching '$search_file_name' found in '$search_path'."
+    fi
+}
+
+create_process()
+{
+    clear
+    echo "1. Calculate Sum of Two Numbers"
+    echo "2. Perform Sorting in an Array"
+    read -p "Enter your choice: " process_choice
+
+case $process_choice in
+        1)
+        read -p "Enter the first number: " num1
+        read -p "Enter the second number: " num2
+        sum=$((num1 + num2))
+            echo "Sum of $num1 and $num2 is: $sum"
+            ;;
+        2)
+        read -p "Enter the array elements (space-separated): " -a array
+        sorted_array=($(for num in "${array[@]}";
+              do echo "$num"; done | sort -n))
+             echo "Sorted array: ${sorted_array[@]}"
+             ;;
+*)
+echo "Invalid choice"
+;;
+esac
+}
+kill_process()
+{
+    clear
+    read -p "Enter the PID of the process to kill: " pid
+    if kill -9 "$pid" >/dev/null 2>&1;
+then
+echo "Killed process with PID $pid"
+else
+    echo "Failed to kill process with PID $pid"
+    fi
+}
+
+rename_file()
+{
+    clear
+    read -p "Enter the directory path: " directory
+    read -p "Enter the current file name: " current_name
+    read -p "Enter the new file name: " new_name
+
+    if mv "$directory/$current_name" "$directory/$new_name";
+then
+echo "Renamed file: $directory/$current_name to $directory/$new_name"
+else
+    echo "Failed to rename file."
+    fi
+}
+
+create_file_and_folder() {
+clear
+    read -p "Enter the directory path: " directory
+    read -p "Enter the folder name: " folder_name
+    read -p "Enter the file name: " file_name
+
+    if [[ -e "$directory/$folder_name" ]]; then
+        echo "Directory '$directory/$folder_name' already exists."
+    else
+        if mkdir -p "$directory/$folder_name" && touch "$directory/$folder_name/$file_name";
+        then
+            echo "Created directory: $directory/$folder_name"
+            echo "Created file: $directory/$folder_name/$file_name"
+        else
+            echo "Failed to create directory and/or file."
+        fi
+    fi
+}
+
+delete_file_or_folder()
+{
+    clear
+    read -p "Enter the path of file or folder to delete: " item_to_delete
+
+    if [[ -e "$item_to_delete" ]];
+    then
+    if [[ -d "$item_to_delete" ]];
+    then
+    rm -r "$item_to_delete"
+    echo "Deleted folder: $item_to_delete"
+    else
+        rm "$item_to_delete"
+        echo "Deleted file: $item_to_delete"
+        fi
+        else
+            echo "Item does not exist: $item_to_delete"
+            fi
+        }
+
+main()
+{
+    while true;
+do
+
+    echo "------------------------------"
+    echo "      My Simple Shell GUI     "
+    echo "------------------------------"
+    echo "1. Create File and Folder"
+    echo "2. Rename File"
+    echo "3. Search for Files"
+    echo "4. Delete File or Folder"
+    echo "5. Build Process(Sum or Sort)"
+    echo "6. Display Process"
+    echo "7. Kill Process by PID"
+    echo "8. Exit"
+    echo "------------------------------"
+
+    read -p "Enter your choice: " choice
+
+case $choice in
+        1)
+        create_file_and_folder
+        ;;
+        2)
+        rename_file
+        ;;
+        3)
+        search_files
+        ;;
+        4)
+        delete_file_or_folder
+        ;;
+        5)
+        create_process
+        ;;
+        6)
+        display_processes
+        ;;
+        7)
+        kill_process
+        ;;
+        8)
+        echo "Exiting..."
+        exit 0
+        ;;
+        *)
+        echo "Invalid choice"
+        ;;
+        esac
+        done
+    }
+
+main
